@@ -11,7 +11,7 @@ const App = () => {
 	const [newName, setNewName] = useState('')
 	const [newNumber, setNewNumber] = useState('')
 	const [filter, setFilter] = useState('')
-	const [personAddedMessage, setPersonAddedMessage] = useState('')
+	const [personAddedMessage, setPersonInfoMessage] = useState('')
 	const [personDeleteErrMessage, setPersonErrorMessage] = useState('')
 	useEffect(() => {
 		phoneSerivces.getAll().then((persons) => {
@@ -36,6 +36,10 @@ const App = () => {
 								person.id !== newPersonNumber.id ? person : newPersonNumber
 							)
 						)
+						setPersonInfoMessage(`Updated ${newPersonNumber.name}`)
+						setTimeout(() => {
+							setPersonInfoMessage('')
+						}, 5000)
 					})
 					.catch(() => {
 						setPersons(
@@ -53,9 +57,9 @@ const App = () => {
 			const person = { name: newName, number: newNumber }
 			phoneSerivces.create(person).then((person) => {
 				setPersons(persons.concat(person))
-				setPersonAddedMessage(`Added ${person.name}`)
+				setPersonInfoMessage(`Added ${person.name}`)
 				setTimeout(() => {
-					setPersonAddedMessage('')
+					setPersonInfoMessage('')
 				}, 5000)
 			})
 		}
@@ -83,6 +87,10 @@ const App = () => {
 				.deleteOne(id)
 				.then(() => {
 					setPersons(persons.filter((person) => person.id !== id))
+					setPersonInfoMessage(`Deleted ${person.name}`)
+					setTimeout(() => {
+						setPersonInfoMessage('')
+					}, 5000)
 				})
 				.catch(() => {
 					setPersonErrorMessage(
