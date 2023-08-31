@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react'
-import Header from './components/Header'
-import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
 import Filter from './components/Filter'
 import Notification from './components/Notification'
 import phoneSerivces from './services/phone'
