@@ -41,13 +41,11 @@ const App = () => {
 							setPersonInfoMessage('')
 						}, 5000)
 					})
-					.catch(() => {
+					.catch((error) => {
 						setPersons(
 							persons.filter((person) => person.id !== newPersonNumber.id)
 						)
-						setPersonErrorMessage(
-							`Information of ${newPersonNumber.name} has removed from server`
-						)
+						setPersonErrorMessage(error.response.data.error)
 						setTimeout(() => {
 							setPersonErrorMessage('')
 						}, 5000)
@@ -55,13 +53,21 @@ const App = () => {
 			}
 		} else {
 			const person = { name: newName, number: newNumber }
-			phoneSerivces.create(person).then((person) => {
-				setPersons(persons.concat(person))
-				setPersonInfoMessage(`Added ${person.name}`)
-				setTimeout(() => {
-					setPersonInfoMessage('')
-				}, 5000)
-			})
+			phoneSerivces
+				.create(person)
+				.then((person) => {
+					setPersons(persons.concat(person))
+					setPersonInfoMessage(`Added ${person.name}`)
+					setTimeout(() => {
+						setPersonInfoMessage('')
+					}, 5000)
+				})
+				.catch((error) => {
+					setPersonErrorMessage(error.response.data.error)
+					setTimeout(() => {
+						setPersonErrorMessage('')
+					}, 5000)
+				})
 		}
 		setNewName('')
 		setNewNumber('')

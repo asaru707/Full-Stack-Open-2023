@@ -5,7 +5,6 @@ const cors = require('cors')
 const person = require('./models/person')
 
 const app = express()
-
 app.use(express.static('dist'))
 app.use(cors())
 app.use(express.json())
@@ -40,11 +39,14 @@ app.get('/api/persons', (request, response) => {
 	})
 })
 
-app.get('/api/persons/:id', (request, response) => {
-	person.findById(request.params.id).then((result) => {
-		if (!result) return response.status(404).end()
-		response.json(result)
-	})
+app.get('/api/persons/:id', (request, response, next) => {
+	person
+		.findById(request.params.id)
+		.then((result) => {
+			if (!result) return response.status(404).end()
+			response.json(result)
+		})
+		.catch((error) => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
@@ -76,7 +78,7 @@ app.delete('/api/persons/:id', (request, response) => {
 	})
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
 	const { name, number } = request.body
 	person
 		.findByIdAndUpdate(
@@ -87,6 +89,7 @@ app.put('/api/persons/:id', (request, response) => {
 		.then((result) => {
 			response.json(result)
 		})
+		.catch((error) => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
@@ -95,13 +98,11 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
-	console.error(error.name)
-
 	if (error.name === 'CastError') {
 		return response.status(400).send({ error: 'malformatted id' })
 	} else if (error.name === 'ValidationError') {
 		return response.status(400).json({ error: error.message })
-	}
+	} else response.status(500).end()
 	next(error)
 }
 app.use(errorHandler)
