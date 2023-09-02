@@ -47,7 +47,7 @@ app.get('/api/persons/:id', (request, response) => {
 	})
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
 	const newPerson = request.body
 	if (!newPerson.name)
 		return response.status(400).json({
