@@ -6,7 +6,7 @@ import Notification from './Notification'
 import Togglable from './Togglable'
 import blogService from '../services/blogs'
 
-const Blogs = ({ blogs, user, setUser, setBlogs, mostLikedBlog, getMostLikedBlog, fetchBlogs }) => {
+const Blogs = ({ blogs, user, setUser, setBlogs }) => {
   const [blogInfo, setBlogInfo] = useState({ type: '', message: '' })
 
   const createBlogRef = useRef()
@@ -24,8 +24,8 @@ const Blogs = ({ blogs, user, setUser, setBlogs, mostLikedBlog, getMostLikedBlog
   const handleBloglikes = async (blogId, like) => {
     const res = await blogService.updateBlogLike(blogId, like)
     const updatedBlogs = [...blogs.filter((blog) => blog.id !== blogId), res]
-    const mostLikedChanged = getMostLikedBlog(updatedBlogs)
-    if (!mostLikedBlog || mostLikedBlog.id !== mostLikedChanged.id) fetchBlogs()
+    updatedBlogs.sort((a, b) => b.likes - a.likes)
+    setBlogs(updatedBlogs)
   }
 
   const handleBlogCreate = async (b) => {
@@ -34,7 +34,6 @@ const Blogs = ({ blogs, user, setUser, setBlogs, mostLikedBlog, getMostLikedBlog
       setBlogInfo({ type: 'error', message: 'failed' })
       return setTimeout(() => setBlogInfo({ type: '', message: '' }), 5000)
     }
-    blog.user = user
     setBlogs(blogs.concat(blog))
     createBlogRef.current.toggleVisibility()
     setBlogInfo({ type: 'success', message: `a new blog ${blog.title} by ${blog.author} added` })

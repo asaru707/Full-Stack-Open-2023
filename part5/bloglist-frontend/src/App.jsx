@@ -8,13 +8,11 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [mostLikedBlog, setMostLikedBlog] = useState(null)
 
   const fetchBlogs = async () => {
     const blogs = await blogService.getAll()
     blogs.sort((a, b) => b.likes - a.likes)
     setBlogs(blogs)
-    if (blogs.length > 1) setMostLikedBlog(getMostLikedBlog(blogs))
   }
 
   useEffect(() => {
@@ -29,9 +27,6 @@ const App = () => {
     }
   }, [])
 
-  const getMostLikedBlog = (blogs) =>
-    blogs.reduce((prev, next) => (next.likes > prev.likes ? next : prev))
-
   if (user === null)
     return (
       <LoginForm
@@ -43,17 +38,7 @@ const App = () => {
       />
     )
 
-  return (
-    <Blogs
-      blogs={blogs}
-      user={user}
-      setUser={setUser}
-      setBlogs={setBlogs}
-      mostLikedBlog={mostLikedBlog}
-      getMostLikedBlog={getMostLikedBlog}
-      fetchBlogs={fetchBlogs}
-    />
-  )
+  return <Blogs blogs={blogs} user={user} setUser={setUser} setBlogs={setBlogs} />
 }
 
 export default App

@@ -18,9 +18,13 @@ blogRouter.post('/', tokenExtractor, userExtractor, async (request, response) =>
     likes: request.body.likes,
   })
 
-  const result = await blog.save()
+  let result = await blog.save()
 
-  await User.findByIdAndUpdate(user._id, user)
+  user.blogs = user.blogs.concat(result._id)
+
+  await User.findByIdAndUpdate(user.id, user)
+
+  result = await Blog.findById(result._id).populate('user')
 
   response.status(201).json(result)
 })
@@ -31,12 +35,14 @@ blogRouter.delete('/:id', tokenExtractor, userExtractor, async (request, respons
   if (!blog) return response.status(404).json({ error: 'blog not found' })
   if (blog.user.toString() !== user.id.toString())
     return response.status(403).json({ error: 'unauthorizated action' })
+  user.blogs = user.blogs.filter((blog) => blog.toString() !== request.params.id)
   const res = await Blog.findByIdAndRemove(request.params.id)
+  await User.findByIdAndUpdate(user.id, user)
   response.status(res ? 204 : 404).end()
 })
 
 blogRouter.put('/:id', async (request, response) => {
-  const res = await Blog.findByIdAndUpdate(
+  let res = await Blog.findByIdAndUpdate(
     request.params.id,
     { likes: request.body.likes },
     {
@@ -45,6 +51,9 @@ blogRouter.put('/:id', async (request, response) => {
       context: 'query',
     }
   )
+
+  res = await Blog.findById(res._id).populate('user')
+
   response.status(202).json(res)
 })
 
