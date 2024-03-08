@@ -1,0 +1,17 @@
+.blog {
+  padding-top: 10px;
+  padding-left: 2px;
+  border: 'solid';
+  border-width: 1px;
+  margin-bottom: 5px;
+}
+
+.custom-input {
+  width: 400px;
+}
+
+.blog-backgroud{
+  background-color: rgba(31, 31, 31, 0.096);
+  width: auto;
+  padding: 10px;
+}
